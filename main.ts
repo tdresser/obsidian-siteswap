@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Plugin, PluginSettingTab, Setting, MarkdownPostProcessor, MarkdownPostProcessorContext, parseYaml } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Plugin, PluginSettingTab, Setting, MarkdownPostProcessor, MarkdownPostProcessorContext, parseYaml, MarkdownPreviewRenderer } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -10,22 +10,23 @@ const DEFAULT_SETTINGS: SiteswapSettings = {
 	mySetting: 'default'
 }
 
+
 export default class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
 
-	static postprocessor: MarkdownPostProcessor = (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-		const code = el.querySelector("pre code.language-siteswap");
-
-		if (!code) return;
-
-		const text = code.textContent;
+	static postprocessor = (source:string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		el.innerHTML = "";
-
-		let yaml = parseYaml(text);
 		let failure : string | null = null;
-		console.log(typeof(yaml));
 
-		if (typeof(yaml) == "object") {
+		let yaml : any = null;
+		try {
+			yaml = parseYaml(source.replaceAll(":", ": "));
+		} catch (e:any) {
+			failure = e.message;
+		}
+
+		if (failure != null) {
+		} else if (typeof(yaml) == "object") {
 			if (!("pattern" in yaml)) {
 				failure = 'Invalid siteswap: the "pattern" attribute is required.'
 			}
@@ -49,13 +50,9 @@ export default class SiteswapPlugin extends Plugin {
 		const params = Object.keys(yaml).map(key => key + '=' + encodeURIComponent(yaml[key])).join(';')
 
 		console.log("TEXT")
-		console.log(text);
-		console.log("YAML");
-		console.log(yaml);
-		console.log("https://jugglinglab.org/anim?" + params);
+		console.log(source);
 
 		const img = document.createElement('img');
-		img.className = ".findable";
         img.src = "https://jugglinglab.org/anim?" + params;
 		img.style.width = "200px";
 		el.appendChild(img);
@@ -65,7 +62,7 @@ export default class SiteswapPlugin extends Plugin {
 		await this.loadSettings();
 
 		console.log('loading siteswap plugin');
-		this.registerMarkdownPostProcessor(SiteswapPlugin.postprocessor)
+		this.registerMarkdownCodeBlockProcessor("siteswap", SiteswapPlugin.postprocessor);
 
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
