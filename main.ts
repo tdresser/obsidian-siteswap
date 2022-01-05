@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessor, MarkdownPostProcessorContext, MarkdownPreviewRenderer } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Plugin, PluginSettingTab, Setting, MarkdownPostProcessor, MarkdownPostProcessorContext, parseYaml } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -21,10 +21,17 @@ export default class SiteswapPlugin extends Plugin {
 		console.log(code.outerHTML);
 
 		const text = code.textContent;
+		const yaml = parseYaml(text);
+
+		console.log("TEXT")
+		console.log(text);
+		console.log("YAML");
+		console.log(yaml);
+
 		const pattern = text;
 		el.innerHTML = code.textContent + `<img 
-			width='200px'
-			height=200px'
+			width="200px"
+			height="200px"
 			src="https://jugglinglab.org/anim?redirect=true;pattern=${pattern}></img>`
 	}
 
