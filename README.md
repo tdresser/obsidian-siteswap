@@ -1,3 +1,5 @@
+https://jugglinglab.org/html/animinfo.html
+
 ## Obsidian Sample Plugin
 
 This is a sample plugin for Obsidian (https://obsidian.md).
