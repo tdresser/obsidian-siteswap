@@ -17,22 +17,48 @@ export default class SiteswapPlugin extends Plugin {
 		const code = el.querySelector("pre code.language-siteswap");
 
 		if (!code) return;
-		console.log("CODE IS");
-		console.log(code.outerHTML);
 
 		const text = code.textContent;
-		const yaml = parseYaml(text);
+		el.innerHTML = "";
+
+		let yaml = parseYaml(text);
+		let failure : string | null = null;
+		console.log(typeof(yaml));
+
+		if (typeof(yaml) == "object") {
+			if (!("pattern" in yaml)) {
+				failure = 'Invalid siteswap: the "pattern" attribute is required.'
+			}
+		} else if (typeof(yaml) == "number" || typeof(yaml) == "string") {
+			yaml = {
+				"pattern": "" + yaml
+			}
+		} else {
+			failure = "Invalid siteswap."
+		}
+
+		if (failure !== null) {
+			const message = document.createElement('p');
+			message.textContent = failure;
+			message.style.color = "#ff0000";
+			el.appendChild(message);
+			return;
+		}
+
+		yaml["redirect"] = true;
+		const params = Object.keys(yaml).map(key => key + '=' + encodeURIComponent(yaml[key])).join(';')
 
 		console.log("TEXT")
 		console.log(text);
 		console.log("YAML");
 		console.log(yaml);
+		console.log("https://jugglinglab.org/anim?" + params);
 
-		const pattern = text;
-		el.innerHTML = code.textContent + `<img 
-			width="200px"
-			height="200px"
-			src="https://jugglinglab.org/anim?redirect=true;pattern=${pattern}></img>`
+		const img = document.createElement('img');
+		img.className = ".findable";
+        img.src = "https://jugglinglab.org/anim?" + params;
+		img.style.width = "200px";
+		el.appendChild(img);
 	}
 
 	async onload() {
