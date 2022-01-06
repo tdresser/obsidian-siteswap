@@ -40,12 +40,12 @@ export class SiteswapPlugin extends Plugin {
 			}
 
 			const paramsObject = Object.assign(getSettings(), yaml);
+			console.log(paramsObject);
 
 			paramsObject["redirect"] = true;
-			const params = Object.keys(paramsObject).map(key => key + '=' + encodeURIComponent(yaml[key])).join(';')
+			const params = Object.keys(paramsObject).map(key => key + '=' + encodeURIComponent(paramsObject[key])).join(';')
 
-			console.log("TEXT")
-			console.log(source);
+			console.log(params);
 
 			const img = document.createElement('img');
 			img.src = "https://jugglinglab.org/anim?" + params;
