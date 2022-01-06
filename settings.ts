@@ -54,7 +54,7 @@ export class SiteswapSettingTab extends PluginSettingTab {
 		console.log(this.plugin.settings);
 
 
-		/*new Setting(containerEl)
+		new Setting(containerEl)
 			.setName('width')
 			.setDesc('Width of the generated GIF, in pixels.')
 			.addSlider(slider => slider
@@ -160,6 +160,6 @@ export class SiteswapSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.stereo = value;
 					await this.plugin.saveSettings();
-				}));*/
+				}));
 		}
 }

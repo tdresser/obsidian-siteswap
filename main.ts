@@ -4,22 +4,20 @@ import { SiteswapSettingTab, SiteswapSettings, DEFAULT_SETTINGS } from 'settings
 export class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
 
-	static postprocessor = //(getSettings: () => SiteswapSettings) => {
-		//return (source:string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-			 (source:string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-
+	static postprocessor = (getSettings: () => SiteswapSettings) => {
+		return (source:string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 			el.innerHTML = "";
 			let failure : string | null = null;
 
 			let yaml : any = null;
 			try {
-				//yaml = Object.assign(getSettings(), parseYaml(source.replaceAll(":", ": ")));
 				yaml = parseYaml(source.replaceAll(":", ": "));
 			} catch (e:any) {
 				failure = e.message;
 			}
 
 			if (failure != null) {
+				// Pass.
 			} else if (typeof(yaml) == "object") {
 				if (!("pattern" in yaml)) {
 					failure = 'Invalid siteswap: the "pattern" attribute is required.'
@@ -41,8 +39,10 @@ export class SiteswapPlugin extends Plugin {
 				return;
 			}
 
-			yaml["redirect"] = true;
-			const params = Object.keys(yaml).map(key => key + '=' + encodeURIComponent(yaml[key])).join(';')
+			const paramsObject = Object.assign(getSettings(), yaml);
+
+			paramsObject["redirect"] = true;
+			const params = Object.keys(paramsObject).map(key => key + '=' + encodeURIComponent(yaml[key])).join(';')
 
 			console.log("TEXT")
 			console.log(source);
@@ -52,14 +52,13 @@ export class SiteswapPlugin extends Plugin {
 			img.style.width = "200px";
 			el.appendChild(img);
 	}
-//}
+}
 
 	async onload() {
 		await this.loadSettings();
 
 		console.log('loading siteswap plugin');
-		//this.registerMarkdownCodeBlockProcessor("siteswap", SiteswapPlugin.postprocessor(() => this.settings));
-		this.registerMarkdownCodeBlockProcessor("siteswap", SiteswapPlugin.postprocessor);
+		this.registerMarkdownCodeBlockProcessor("siteswap", SiteswapPlugin.postprocessor(() => this.settings));
 
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
@@ -88,4 +87,4 @@ export class SiteswapPlugin extends Plugin {
 	}
 }
 
-
+export default SiteswapPlugin;
