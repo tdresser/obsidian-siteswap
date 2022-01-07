@@ -11,13 +11,20 @@ import {
 	DEFAULT_SETTINGS,
 } from "settings";
 
+type PostProcessor = (
+	source: string,
+	el: HTMLElement,
+	ctx: MarkdownPostProcessorContext
+) => void;
+
 // TODO, add an attribute storing the current postprocessor, remove and reregister on settings update.
 // We don't need to pass in getSettings, just curry the settings object.
 
 export class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
+	postProcessor: PostProcessor;
 
-	static postprocessor = (getSettings: () => SiteswapSettings) => {
+	static postprocessor = (settings: SiteswapSettings) => {
 		return (
 			source: string,
 			el: HTMLElement,
@@ -26,10 +33,10 @@ export class SiteswapPlugin extends Plugin {
 			el.innerHTML = "";
 			let failure: string | null = null;
 
-			let yaml: any = null;
+			let yaml = null;
 			try {
 				yaml = parseYaml(source.replaceAll(":", ": "));
-			} catch (e: any) {
+			} catch (e) {
 				failure = e.message;
 			}
 
@@ -56,10 +63,13 @@ export class SiteswapPlugin extends Plugin {
 				return;
 			}
 
-			const paramsObject = Object.assign(getSettings(), yaml);
+			console.log("YAML");
+			console.log(yaml);
+			console.log("SETTINGS");
+			console.log(settings);
+			const paramsObject = { redirect: true, ...settings, ...yaml };
 			console.log(paramsObject);
 
-			paramsObject["redirect"] = true;
 			const params = Object.keys(paramsObject)
 				.map((key) => key + "=" + encodeURIComponent(paramsObject[key]))
 				.join(";");
@@ -77,26 +87,16 @@ export class SiteswapPlugin extends Plugin {
 		await this.loadSettings();
 
 		console.log("loading siteswap plugin");
-		this.registerMarkdownCodeBlockProcessor(
-			"siteswap",
-			SiteswapPlugin.postprocessor(() => this.settings)
-		);
-
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: "sample-editor-command",
-			name: "Sample editor command",
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection("Sample Editor Command");
-			},
-		});
+		this.postProcessor = SiteswapPlugin.postprocessor(this.settings);
+		this.registerMarkdownCodeBlockProcessor("siteswap", this.postProcessor);
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SiteswapSettingTab(this.app, this));
 	}
 
 	onunload() {
+		//this.postProcessor = SiteswapPlugin.postprocessor(this.settings);
+		//this.register("siteswap", this.postProcessor);
 		console.log("unloading siteswap plugin");
 	}
 
@@ -106,6 +106,7 @@ export class SiteswapPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
+		this.settings = DEFAULT_SETTINGS;
 	}
 
 	async saveSettings() {
