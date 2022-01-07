@@ -48,6 +48,9 @@ export class SiteswapSettingTab extends PluginSettingTab {
 
 		<p>These settings apply to all generated siteswap animations, but can be overridden by specifying
 		these parameters in the pattern configuration.</p>
+
+		<p>Note that existing animations won't update automatically after updating settings. 
+		Turning the plugin off and on again is the easiest way to update everything.</p>
 		`;
 		containerEl.appendChild(docs);
 

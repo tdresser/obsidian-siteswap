@@ -1,28 +1,12 @@
-import {
-	Editor,
-	MarkdownView,
-	Plugin,
-	MarkdownPostProcessorContext,
-	parseYaml,
-} from "obsidian";
+import { Plugin, MarkdownPostProcessorContext, parseYaml } from "obsidian";
 import {
 	SiteswapSettingTab,
 	SiteswapSettings,
 	DEFAULT_SETTINGS,
 } from "settings";
 
-type PostProcessor = (
-	source: string,
-	el: HTMLElement,
-	ctx: MarkdownPostProcessorContext
-) => void;
-
-// TODO, add an attribute storing the current postprocessor, remove and reregister on settings update.
-// We don't need to pass in getSettings, just curry the settings object.
-
 export class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
-	postProcessor: PostProcessor;
 
 	static postprocessor = (settings: SiteswapSettings) => {
 		return (
@@ -63,18 +47,11 @@ export class SiteswapPlugin extends Plugin {
 				return;
 			}
 
-			console.log("YAML");
-			console.log(yaml);
-			console.log("SETTINGS");
-			console.log(settings);
 			const paramsObject = { redirect: true, ...settings, ...yaml };
-			console.log(paramsObject);
 
 			const params = Object.keys(paramsObject)
 				.map((key) => key + "=" + encodeURIComponent(paramsObject[key]))
 				.join(";");
-
-			console.log(params);
 
 			const img = document.createElement("img");
 			img.src = "https://jugglinglab.org/anim?" + params;
@@ -87,16 +64,15 @@ export class SiteswapPlugin extends Plugin {
 		await this.loadSettings();
 
 		console.log("loading siteswap plugin");
-		this.postProcessor = SiteswapPlugin.postprocessor(this.settings);
-		this.registerMarkdownCodeBlockProcessor("siteswap", this.postProcessor);
+		this.registerMarkdownCodeBlockProcessor(
+			"siteswap",
+			SiteswapPlugin.postprocessor(this.settings)
+		);
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SiteswapSettingTab(this.app, this));
 	}
 
 	onunload() {
-		//this.postProcessor = SiteswapPlugin.postprocessor(this.settings);
-		//this.register("siteswap", this.postProcessor);
 		console.log("unloading siteswap plugin");
 	}
 
@@ -106,7 +82,6 @@ export class SiteswapPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
-		this.settings = DEFAULT_SETTINGS;
 	}
 
 	async saveSettings() {
