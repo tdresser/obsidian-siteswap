@@ -1,3 +1,15 @@
+# 0.1.6 (Sat Jan 08 2022)
+
+#### ⚠️ Pushed to `main`
+
+- Siteswap Test.md exercises behavior. ([@tdresser](https://github.com/tdresser))
+
+#### Authors: 1
+
+- Timothy Dresser ([@tdresser](https://github.com/tdresser))
+
+---
+
 # 0.1.5 (Sat Jan 08 2022)
 
 #### ⚠️ Pushed to `main`
