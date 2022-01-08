@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-siteswap",
-	"version": "0.1",
+	"version": "0.1.0",
 	"description": "Visualize siteswap juggling patterns in Obsidian.",
 	"main": "main.js",
 	"scripts": {
