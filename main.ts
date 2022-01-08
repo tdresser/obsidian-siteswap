@@ -16,7 +16,6 @@ export class SiteswapPlugin extends Plugin {
 			el: HTMLElement,
 			ctx: MarkdownPostProcessorContext
 		) => {
-			el.innerHTML = "";
 			let failure: string | null = null;
 
 			let yaml = null;
@@ -73,13 +72,9 @@ export class SiteswapPlugin extends Plugin {
 
 			delete paramsObject.scale;
 
-			console.log(paramsObject);
-
 			const params = Object.keys(paramsObject)
 				.map((key) => key + "=" + encodeURIComponent(paramsObject[key]))
 				.join(";");
-
-			console.log(params);
 
 			const img = document.createElement("img");
 			img.src = "https://jugglinglab.org/anim?" + params;

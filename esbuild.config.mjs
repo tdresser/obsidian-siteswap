@@ -10,6 +10,36 @@ if you want to view the source, please visit the github repository of this plugi
 */
 `;
 
+async function writeToPluginDirIfNeeded() {
+	if (process.env.OBSIDIAN_VAULT) {
+		const plugin_dir = path.join(
+			process.env.OBSIDIAN_VAULT,
+			".obsidian",
+			"plugins",
+			"obsidian-siteswap"
+		);
+		try {
+			await fs.stat(plugin_dir);
+		} catch {
+			await fs.mkdir(plugin_dir);
+		}
+
+		const hotreload_path = path.join(plugin_dir, ".hotreload");
+
+		try {
+			await fs.stat(hotreload_path);
+		} catch {
+			await fs.writeFile(hotreload_path, "");
+		}
+		await fs.copyFile("main.js", path.join(plugin_dir, "main.js"));
+		await fs.copyFile(
+			"manifest.json",
+			path.join(plugin_dir, "manifest.json")
+		);
+		console.log("Copied to vault.");
+	}
+}
+
 const prod = process.argv[2] === "production";
 
 esbuild
@@ -21,29 +51,20 @@ esbuild
 		bundle: true,
 		external: ["obsidian", "electron", ...builtins],
 		format: "cjs",
-		watch: !prod,
+		watch: prod
+			? false
+			: {
+					onRebuild(error, result) {
+						writeToPluginDirIfNeeded();
+					},
+			  },
 		target: "es2016",
 		logLevel: "info",
 		sourcemap: prod ? false : "inline",
 		treeShaking: true,
 		outfile: "main.js",
 	})
-	.catch(() => process.exit(1));
-
-//(() => {
-if (process.env.OBSIDIAN_VAULT) {
-	const plugin_dir = path.join(
-		process.env.OBSIDIAN_VAULT,
-		".obsidian",
-		"plugins",
-		"obsidian-siteswap"
-	);
-	try {
-		await fs.stat(plugin_dir);
-	} catch {
-		await fs.mkdir(plugin_dir);
-	}
-	await fs.copyFile("main.js", path.join(plugin_dir, "main.js"));
-	await fs.copyFile("manifest.json", path.join(plugin_dir, "manifest.json"));
-}
-//})();
+	.catch((e) => {
+		console.log(e);
+		process.exit(1);
+	});

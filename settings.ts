@@ -43,21 +43,28 @@ export class SiteswapSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Siteswap Settings" });
-
-		const docs = document.createElement("div");
-		docs.innerHTML = `<p>Detailed documentation can be found at 
-		<a href="https://jugglinglab.org/html/animinfo.html">jugglinglab.org/html/animinfo.html</a>.</p>
-
-		<p>These settings apply to all generated siteswap animations, but can be overridden by specifying
-		these parameters in the pattern configuration.</p>
-
-		<p>Note that existing animations won't update automatically after updating settings. 
-		Turning the plugin off and on again is the easiest way to update everything.</p>
-		`;
-		containerEl.appendChild(docs);
-
-		console.log(this.plugin.settings);
+		containerEl.appendChild(
+			createFragment((frag) => {
+				frag.createEl("h2", { text: "Siteswap Settings" });
+				frag.createEl("p", "????", (p) => {
+					p.appendText("Detailed documentation can be found at ");
+					p.createEl("a", {
+						text: "jugglinglab.org/html/animinfo.html",
+						href: "https://jugglinglab.org/html/animinfo.html",
+					});
+					p.appendText(`.`);
+				});
+				frag.createEl("p", {
+					text: `These settings apply to all generated siteswap 
+					animations, but can be overridden by specifying these parameters in the pattern 
+					configuration.`,
+				});
+				frag.createEl("p", {
+					text: `Note that existing animations won't update automatically after updating settings. 
+			Turning the plugin off and on again is the easiest way to update everything.`,
+				});
+			})
+		);
 
 		new Setting(containerEl)
 			.setName("width")

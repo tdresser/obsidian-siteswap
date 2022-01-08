@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "node esbuild.config.mjs production",
-		"release": "npx auto shipit"
+		"release": "node esbuild.config.mjs production && npx auto shipit"
 	},
 	"keywords": [],
 	"author": "Tim Dresser",
