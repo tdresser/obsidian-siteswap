@@ -1,70 +1,58 @@
-https://jugglinglab.org/html/animinfo.html
+## Obsidian Siteswap
 
-## Obsidian Sample Plugin
+This plugin renders the "[Siteswap](https://en.wikipedia.org/wiki/Siteswap)" juggling notation via the Juggling Lab GIF server. Full documentation for the GIF server is [here](https://jugglinglab.org/html/animinfo.html).
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Straight forward siteswaps can be visualized via:
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+<pre>
+```siteswap
+(4x,2)*
+```
+</pre>
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+![](<https://jugglinglab.org/anim?redirect=true;height=200;width=200;pattern=(4%2C2x)*>)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Changes the default font color to red using `styles.css`.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+If you want to specify more details than just the pattern, use the following form:
 
-### First time developing plugins?
+<pre>
+```siteswap
+pattern: 3
+hands: (-25)(2.5).(25)(-2.5).(-25)(0).
+colors: mixed
+```
+</pre>
 
-Quick starting guide for new plugin devs:
+![](<https://jugglinglab.org/anim?redirect=true;pattern=3;height=200;width=200;hands=(-25)(2.5).(25)(-2.5).(-25)(0).;colors=mixed>)
 
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+Details are specified via YAML - each line contains the name of a key, followed by a colon and a space, followed by a value.
 
-### Releasing new releases
+Some attributes can be defined globally via the plugin settings. If global settings conflict with the details specified for a given animation, the global attributes are overwritten.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+## Per Animation Settings
 
-### Adding your plugin to the community plugin list
+-   pattern: siteswap pattern to animate, in generalized siteswap notation.
+-   bps: number of beats per second in the pattern, a floating point value. Default is automatically calculated from the pattern.
+-   dwell: number of beats a catch is made prior to the subsequent throw. Values are floating-point numbers between 0.0 and 2.0; default value is 1.3.
+-   hands: hand movement as a sequence of spatial coordinates for catches and throws and points in-between. Details [here](https://jugglinglab.org/html/sspanel.html).
+-   body: body movement as a sequence of angles and spatial coordinates. Details [here](https://jugglinglab.org/html/sspanel.html).
+-   colors: determines the coloring of the props. Each color is defined either by name or by its red/green/blue components on a 0-255 scale. For example if this setting is equal to {red} or {255,0,0}, the animator will use red balls. If you define several colors in a list, they are assigned to the balls in a cyclical manner. For example, {255,0,0}{0,255,0} means that ball 1 is red, ball 2 is green, ball 3 is red, ball 4 is green, and so on. Recognized color names are: black, blue, cyan, gray, green, magenta, orange, pink, red, yellow. Using the value mixed (no braces) will apply a pre-defined mix of colors. Default is {red}.
+-   propdiam: diameter of the props, in centimeters. Default is 10.0.
+-   prop: prop type to use. Recognized prop names are ball, image, and ring; default is ball.
+-   gravity: acceleration of gravity, in cm/sec^2. Default is 980.0 (Earth standard).
+-   bouncefrac: fraction of a ball's energy retained after bouncing off the ground (how much of its dropped height does it return to?). Values are floating point numbers greater than 0.0; default is 0.9.
+-   hss: hand siteswap pattern to apply to the hands. See the [documentation](https://jugglinglab.org/html/HandSiteswapFeature.pdf).
+-   handspec: (for hss mode only) assignment of hands to jugglers; see [documentation](https://jugglinglab.org/html/HandSiteswapFeature.pdf) for format.
+-   dwellmax: (for hss mode only) whether to automatically maximize dwell time. Default value is true.
+-   hold: (for hss mode only) whether to hold throws that can be held. Default value is false.
 
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## Global Settings
 
-### How to use
-
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
-
-### Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-### Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-
-### API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+-   width: Width of the animation, in pixels.
+-   height: Height of the animation, in pixels.
+-   scale: Scaling factor for the generated GIF. 1.0 performs no scaling.
+-   fps: Number of frames per second in the generated GIF.
+-   slowdown: Defines an overall time slowdown factor (e.g., slowdown: 1.0 is actual speed, slowdown: 2.0 is half actual speed).
+-   showground: Whether to display the ground ("true", "false" or "auto").
+-   camangle: Camera angles in degrees, given as one or a pair of angles. Example: camangle: (0,90). The first angle describes rotation of the camera around the juggler, and the second angle is the elevation angle given as degrees from directly overhead (i.e., 90 puts the camera on the same level as the juggler). Default value depends on the pattern.
+-   hidejugglers: List of one or more jugglers to hide (i.e., not render) during animation. Examples: hidejugglers=1 or hidejugglers=(1,3).
+-   stereo: Whether to display the pattern as a cross-eyed stereogram.

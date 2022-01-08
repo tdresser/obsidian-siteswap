@@ -4,26 +4,30 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 export interface SiteswapSettings {
 	width: number;
 	height: number;
+	scale: number;
 	fps: number;
 	stereo: boolean;
 	slowdown: number;
-	border: number;
 	camangle: string;
 	showground: "auto" | "true" | "false";
 	hidejugglers: string;
 }
 
 export const DEFAULT_SETTINGS: SiteswapSettings = {
-	width: 400,
-	height: 450,
-	fps: 33.3,
+	width: 200,
+	height: 225,
+	scale: 0.5,
+	fps: 33,
 	stereo: false,
 	slowdown: 2,
-	border: 0,
 	camangle: "",
 	showground: "auto",
 	hidejugglers: "",
 };
+
+function stripNonNumerals(x: string): string {
+	return x.replaceAll(/\D/g, "");
+}
 
 export class SiteswapSettingTab extends PluginSettingTab {
 	plugin: SiteswapPlugin;
@@ -34,7 +38,6 @@ export class SiteswapSettingTab extends PluginSettingTab {
 	}
 
 	// TODO: maybe write a declarative wrapper for this? Or refactor somehow.
-	// TODO: replace sliders with textfields that have validation.
 	display(): void {
 		const { containerEl } = this;
 
@@ -58,28 +61,44 @@ export class SiteswapSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("width")
-			.setDesc("Width of the generated GIF, in pixels.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(10, 2000, 10)
-					.setValue(this.plugin.settings.width)
-					.setDynamicTooltip()
+			.setDesc("Width of the animation, in pixels.")
+			.addText((widget) =>
+				widget
+					.setValue("" + this.plugin.settings.width)
 					.onChange(async (value) => {
-						this.plugin.settings.width = value;
+						value = stripNonNumerals(value);
+						widget.setValue(value);
+						this.plugin.settings.width = parseInt(value);
 						await this.plugin.saveSettings();
 					})
 			);
 
 		new Setting(containerEl)
 			.setName("height")
-			.setDesc("Height of the generated GIF, in pixels.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(10, 2000, 10)
-					.setValue(this.plugin.settings.height)
-					.setDynamicTooltip()
+			.setDesc("Height of the animation, in pixels.")
+			.addText((widget) =>
+				widget
+					.setValue("" + this.plugin.settings.height)
 					.onChange(async (value) => {
-						this.plugin.settings.height = value;
+						value = stripNonNumerals(value);
+						widget.setValue(value);
+						this.plugin.settings.height = parseInt(value);
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("scale")
+			.setDesc(
+				"Scaling factor for the generated GIF. 1.0 performs no scaling."
+			)
+			.addText((widget) =>
+				widget
+					.setValue("" + this.plugin.settings.scale)
+					.onChange(async (value) => {
+						value = stripNonNumerals(value);
+						widget.setValue(value);
+						this.plugin.settings.scale = parseInt(value);
 						await this.plugin.saveSettings();
 					})
 			);
@@ -87,13 +106,13 @@ export class SiteswapSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("fps")
 			.setDesc("Number of frames per second in the generated GIF.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(1, 200, 1)
-					.setValue(this.plugin.settings.height)
-					.setDynamicTooltip()
+			.addText((widget) =>
+				widget
+					.setValue("" + this.plugin.settings.fps)
 					.onChange(async (value) => {
-						this.plugin.settings.height = value;
+						value = stripNonNumerals(value);
+						widget.setValue(value);
+						this.plugin.settings.fps = parseInt(value);
 						await this.plugin.saveSettings();
 					})
 			);
@@ -101,15 +120,15 @@ export class SiteswapSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("slowdown")
 			.setDesc(
-				"Defines an overall time slowdown factor (e.g., slowdown=1.0 is actual speed, slowdown=2.0 is half actual speed)."
+				"Defines an overall time slowdown factor (e.g., slowdown: 1.0 is actual speed, slowdown: 2.0 is half actual speed)."
 			)
-			.addSlider((slider) =>
-				slider
-					.setLimits(0.1, 10, 0.1)
-					.setValue(this.plugin.settings.slowdown)
-					.setDynamicTooltip()
+			.addText((widget) =>
+				widget
+					.setValue("" + this.plugin.settings.slowdown)
 					.onChange(async (value) => {
-						this.plugin.settings.slowdown = value;
+						value = stripNonNumerals(value);
+						widget.setValue(value);
+						this.plugin.settings.slowdown = parseInt(value);
 						await this.plugin.saveSettings();
 					})
 			);
@@ -136,23 +155,9 @@ export class SiteswapSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("border")
-			.setDesc("Defines a border (in pixels) around the animation.")
-			.addSlider((slider) =>
-				slider
-					.setLimits(0, 10, 1)
-					.setValue(this.plugin.settings.border)
-					.setDynamicTooltip()
-					.onChange(async (value) => {
-						this.plugin.settings.border = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(containerEl)
 			.setName("camangle")
 			.setDesc(
-				"Camera angles in degrees, given as one or a pair of angles. Example: camangle=(0,90). The first angle describes rotation of the camera around the juggler, and the second angle is the elevation angle given as degrees from directly overhead (i.e., 90 puts the camera on the same level as the juggler). Default value depends on the pattern."
+				"Camera angles in degrees, given as one or a pair of angles. Example: camangle: (0,90). The first angle describes rotation of the camera around the juggler, and the second angle is the elevation angle given as degrees from directly overhead (i.e., 90 puts the camera on the same level as the juggler). Default value depends on the pattern."
 			)
 			.addText((text) =>
 				text

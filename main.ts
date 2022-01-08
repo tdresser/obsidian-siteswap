@@ -5,6 +5,8 @@ import {
 	DEFAULT_SETTINGS,
 } from "settings";
 
+const defaultSettingsObject = Object.assign({}, DEFAULT_SETTINGS);
+
 export class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
 
@@ -42,20 +44,46 @@ export class SiteswapPlugin extends Plugin {
 			if (failure !== null) {
 				const message = document.createElement("p");
 				message.textContent = failure;
-				message.style.color = "#ff0000";
+				message.style.color = "var(--text-error)";
 				el.appendChild(message);
 				return;
 			}
 
 			const paramsObject = { redirect: true, ...settings, ...yaml };
+			const displayWidth = paramsObject.width;
+
+			paramsObject.width = paramsObject.width / paramsObject.scale;
+			paramsObject.height = paramsObject.height / paramsObject.scale;
+
+			// Don't pass default params. We want to fetched cached animations as much as possible,
+			// and passing default params means we'll miss commonly cached animations.
+			for (const key in paramsObject) {
+				// Width and height are a bit tricky as the default used here isn't the default
+				// for the gif generator. Special case those defaults here.
+				if (key == "width" && paramsObject[key] == 400) {
+					delete paramsObject["width"];
+				} else if (key == "height" && paramsObject[key] == 450) {
+					delete paramsObject["height"];
+				} else {
+					if (defaultSettingsObject[key] == paramsObject[key]) {
+						delete paramsObject[key];
+					}
+				}
+			}
+
+			delete paramsObject.scale;
+
+			console.log(paramsObject);
 
 			const params = Object.keys(paramsObject)
 				.map((key) => key + "=" + encodeURIComponent(paramsObject[key]))
 				.join(";");
 
+			console.log(params);
+
 			const img = document.createElement("img");
 			img.src = "https://jugglinglab.org/anim?" + params;
-			img.style.width = "200px";
+			img.style.width = displayWidth + "px";
 			el.appendChild(img);
 		};
 	};
