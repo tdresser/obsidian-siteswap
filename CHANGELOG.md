@@ -1,3 +1,15 @@
+# 0.1.7 (Sun Jan 23 2022)
+
+#### ⚠️ Pushed to `main`
+
+- Address review feedback ([@tdresser](https://github.com/tdresser))
+
+#### Authors: 1
+
+- Timothy Dresser ([@tdresser](https://github.com/tdresser))
+
+---
+
 # 0.1.6 (Sat Jan 08 2022)
 
 #### ⚠️ Pushed to `main`
