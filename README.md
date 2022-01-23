@@ -2,6 +2,8 @@
 
 This plugin renders the "[Siteswap](https://en.wikipedia.org/wiki/Siteswap)" juggling notation via the Juggling Lab GIF server. Full documentation for the GIF server is [here](https://jugglinglab.org/html/animinfo.html).
 
+This plugin requires an internet connection.
+
 Straight forward siteswaps can be visualized via:
 
 <pre>

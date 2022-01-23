@@ -20,6 +20,8 @@ export class SiteswapPlugin extends Plugin {
 
 			let yaml = null;
 			try {
+				// Replacing ':' with ': ' is a bit of a hack, but we know a priori that keys and values will
+				// never contain colons, so this is safe.
 				yaml = parseYaml(source.replaceAll(":", ": "));
 			} catch (e) {
 				failure = e.message;
@@ -73,7 +75,12 @@ export class SiteswapPlugin extends Plugin {
 			delete paramsObject.scale;
 
 			const params = Object.keys(paramsObject)
-				.map((key) => key + "=" + encodeURIComponent(paramsObject[key]))
+				.map(
+					(key) =>
+						encodeURIComponent(key) +
+						"=" +
+						encodeURIComponent(paramsObject[key])
+				)
 				.join(";");
 
 			const img = document.createElement("img");
