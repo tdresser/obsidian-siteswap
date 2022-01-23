@@ -35,7 +35,7 @@ Some attributes can be defined globally via the plugin settings. If global setti
 -   pattern: siteswap pattern to animate, in generalized siteswap notation.
 -   bps: number of beats per second in the pattern, a floating point value. Default is automatically calculated from the pattern.
 -   dwell: number of beats a catch is made prior to the subsequent throw. Values are floating-point numbers between 0.0 and 2.0; default value is 1.3.
--   hands: hand movement as a sequence of spatial coordinates for catches and throws and points in-between. Details [here](https://jugglinglab.org/html/sspanel.html).
+-   hands: one of 'mills', 'inside', 'outside', 'half' or hand movement as a sequence of spatial coordinates for catches and throws and points in-between. Details [here](https://jugglinglab.org/html/sspanel.html).
 -   body: body movement as a sequence of angles and spatial coordinates. Details [here](https://jugglinglab.org/html/sspanel.html).
 -   colors: determines the coloring of the props. Each color is defined either by name or by its red/green/blue components on a 0-255 scale. For example if this setting is equal to {red} or {255,0,0}, the animator will use red balls. If you define several colors in a list, they are assigned to the balls in a cyclical manner. For example, {255,0,0}{0,255,0} means that ball 1 is red, ball 2 is green, ball 3 is red, ball 4 is green, and so on. Recognized color names are: black, blue, cyan, gray, green, magenta, orange, pink, red, yellow. Using the value mixed (no braces) will apply a pre-defined mix of colors. Default is {red}.
 -   propdiam: diameter of the props, in centimeters. Default is 10.0.

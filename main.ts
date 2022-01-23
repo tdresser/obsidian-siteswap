@@ -7,6 +7,24 @@ import {
 
 const defaultSettingsObject = Object.assign({}, DEFAULT_SETTINGS);
 
+// See https://github.com/jkboyce/jugglinglab/blob/c0226400230714571de078893c46aef734856ebc/source/jugglinglab/notation/MHNNotationControl.java#L24
+function expandBuiltInHandString(
+	hands: string | undefined
+): string | undefined {
+	if (hands == undefined) {
+		return undefined;
+	}
+	const BUILT_IN_HAND_STRINGS: Map<string, string> = new Map(
+		Object.entries({
+			inside: "(10)(32.5).",
+			outside: "(32.5)(10).",
+			half: "(32.5)(10).(10)(32.5).",
+			mills: "(-25)(2.5).(25)(-2.5).(-25)(0).",
+		})
+	);
+	return BUILT_IN_HAND_STRINGS.get(hands.toLowerCase()) || hands;
+}
+
 export class SiteswapPlugin extends Plugin {
 	settings: SiteswapSettings;
 
@@ -55,6 +73,8 @@ export class SiteswapPlugin extends Plugin {
 
 			paramsObject.width = paramsObject.width / paramsObject.scale;
 			paramsObject.height = paramsObject.height / paramsObject.scale;
+
+			paramsObject.hands = expandBuiltInHandString(paramsObject.hands);
 
 			// Don't pass default params. We want to fetched cached animations as much as possible,
 			// and passing default params means we'll miss commonly cached animations.
