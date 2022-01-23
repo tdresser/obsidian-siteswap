@@ -1,3 +1,15 @@
+# 0.1.8 (Sun Jan 23 2022)
+
+#### ⚠️ Pushed to `main`
+
+- Add support for hands shortforms ([@tdresser](https://github.com/tdresser))
+
+#### Authors: 1
+
+- Timothy Dresser ([@tdresser](https://github.com/tdresser))
+
+---
+
 # 0.1.7 (Sun Jan 23 2022)
 
 #### ⚠️ Pushed to `main`
